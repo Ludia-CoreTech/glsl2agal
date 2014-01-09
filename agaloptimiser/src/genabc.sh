@@ -1,5 +1,20 @@
-java -jar $SDK/usr/lib/asc2.jar -merge -md -d -abcfuture -AS3 \
-   -out agaloptimiser -outdir . -import $SDK/usr/lib/builtin.abc -import $SDK/usr/lib/playerglobal.abc \
+ASC2=$SDK/usr/lib/asc2.jar
+BUILTIN=$SDK/usr/lib/builtin.abc
+PGLOBAL=$SDK/usr/lib/playerglobal.abc
+
+#Detect if running in windows.
+#uname -s in flascc sdk returns "FreeBSD"
+#so this seems a bit more reliable
+CP=`which cygpath`
+if [ $? -eq 0 ]
+then
+   ASC2=`cygpath -w $ASC2`
+   BUILTIN=`cygpath -w $BUILTIN`
+   PGLOBAL=`cygpath -w $PGLOBAL`
+fi
+
+java -jar $ASC2 -merge -md -d -abcfuture -AS3 \
+   -out agaloptimiser -outdir . -import $BUILTIN -import $PGLOBAL \
    com/adobe/AGALOptimiser/nsinternal.as \
    com/adobe/AGALOptimiser/nsdebug.as \
    com/adobe/AGALOptimiser/agal/BasicBlock.as \

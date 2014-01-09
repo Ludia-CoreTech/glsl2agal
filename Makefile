@@ -5,7 +5,7 @@ BUILD=$(PWD)/build
 INSTALL=$(PWD)/install
 SRCROOT=$(PWD)/
 
-ENV=PATH="$(FLASCC)/usr/bin":"$(INSTALL)/usr/bin":"$(PATH)" CC=gcc CXX=g++ CFLAGS=-O4 CXXFLAGS=-O4
+ENV=PATH="$(FLASCC)/usr/bin":"$(INSTALL)/usr/bin":"$(PATH)" CC=gcc CXX=g++ CFLAGS=-O3 CXXFLAGS=-O3
 
 swc: check
 	cd swc && $(ENV) cmake -D SDK="$(FLASCC)" .
