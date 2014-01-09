@@ -213,15 +213,17 @@ extern "C" void compileShader()
 
    glslopt_cleanup(gContext);
 
+   //optimize shader and/or turn sampler instructions into easily
+   //replaceable aliases (for generating sampler variations at runtime)
    inline_as3(
       "import com.adobe.AGALOptimiser.translator.transformations.Utils;\n"
-      "if(optimize) {\n"
-      "    var shader:Object = null;\n"
-      "    try { shader = JSON.parse(outputstr) } catch(e:*) { }\n"
-      "    if(shader != null && shader[\"agalasm\"] != null) {\n"
+      "var shader:Object = null;\n"
+      "try { shader = JSON.parse(outputstr) } catch(e:*) { }\n"
+      "if(shader != null && shader[\"agalasm\"] != null) {\n"
+      "    if(optimize)\n"
       "        shader = Utils.optimizeShader(shader, mode == 0)\n"
-      "        outputstr = JSON.stringify(shader, null, 1)\n"
-      "    }\n"
+      "    shader[\"agalasm\"] = Utils.processSamplers(shader[\"agalasm\"]);\n"
+      "    outputstr = JSON.stringify(shader, null, 1)\n"
       "}\n"
    );
 

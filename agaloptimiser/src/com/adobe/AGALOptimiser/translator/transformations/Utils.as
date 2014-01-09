@@ -60,7 +60,48 @@ public final class Utils
     
         return new TransformationSequenceManager(transformations);
     }
-	
+
+	//replace sampler parameters with a easily replaceable
+	//alias. This makes it easier to generate shader variations
+	//at runtime.
+    public static function processSamplers(asm:String):String
+    {
+		var newasm:String = ""
+		var lastIdx:int = 0;
+		var i:int = asm.indexOf("fs", lastIdx);
+		while (i != -1)
+		{
+			var loc:int = int(asm.charAt(i+2)); //sampler location
+			//assume opening <
+			var start:int = i+5;
+			//find ending >
+			var end:int = asm.indexOf(">", start);
+
+			//find dimension - either 2d or cube (3d not implemented in stage3d)
+			var samplerParams:String = asm.substring(start, end);
+			var isCube:Boolean = false;
+			if (samplerParams.indexOf("cube") != -1)
+			{
+				isCube = true;
+				if (samplerParams.indexOf("2d") != -1)
+					throw "couldn't detect sampler dimension";
+			}
+
+			//replace sampler parameters
+			newasm += asm.substring(lastIdx, start)
+				+ (isCube ? "cube," : "2d,")
+				+ "SAMPLER" + loc.toString();
+
+			lastIdx = end;
+
+			//look for next fs starting from end
+			i = asm.indexOf("fs", lastIdx);
+		}
+		newasm += asm.substring(lastIdx);
+
+		return newasm;
+	}
+
 	public static function optimizeShader(shader:Object, isVS:Boolean ):Object
 	{
 		var s:String
